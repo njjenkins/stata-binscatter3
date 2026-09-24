@@ -1,0 +1,8 @@
+v 0.91
+d
+d 'binscatter3': fork of binscatter2 (fast binned scatterplots) adding a line45 option
+d
+d Distribution-Date: 20260924
+d
+f binscatter3.ado
+f binscatter3.sthlp

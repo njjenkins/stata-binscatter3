@@ -1,6 +1,6 @@
-*! binscatter2, v0.91 (19jan2023), Michael Droste, mdroste@fas.harvard.edu
+*! binscatter3: local fork of binscatter2 v0.91 (19jan2023, Michael Droste) adding the line45 option
 *===============================================================================
-* Program: binscatter2.ado
+* Program: binscatter3.ado (fork of binscatter2.ado; adds line45 option for a dashed gray 45-degree line)
 * Purpose: New functionality and efficiency improvements for binscatter.
 * Author:  Michael Droste
 * Version: 0.91 (19jan2023)
@@ -16,7 +16,7 @@
 * License: You are free to do whatever you want with this program.
 *===============================================================================
 
-program define binscatter2, eclass 
+program define binscatter3, eclass 
 version 12.1
 	
 syntax varlist(min=2 numeric) [if] [in] [aweight fweight], ///
@@ -53,6 +53,7 @@ syntax varlist(min=2 numeric) [if] [in] [aweight fweight], ///
 	randvar(varname numeric) ///
 	randcut(real 1) ///
 	randn(integer -1) ///
+	line45 ///
 	/* LEGACY OPTIONS */ nbins(integer 20) create_xq x_q(varname numeric) symbols(string) method(string) unique(string) ///
 	*]
 
@@ -68,7 +69,7 @@ local a1 = _rc
 cap which gcollapse
 local a2 = _rc
 if `a1'!=0 | `a2'!=0 {
-	di as error "Error: Must have gtools installed to use binscatter2"
+	di as error "Error: Must have gtools installed to use binscatter3"
 	di as error " See the gtools github repo: https://github.com/mcaceresb/stata-gtools"
 	exit
 }
@@ -129,22 +130,22 @@ if "`linetype'"=="noline" {
 	
 * Can't use method() legacy option
 if "`method'"!="" {
-	di as text "NOTE: method() is no longer a recognized option in binscatter2 and will be ignored. binscatter2 now always uses the fastest method without a need for two instances"
+	di as text "NOTE: method() is no longer a recognized option in binscatter3 and will be ignored. binscatter3 now always uses the fastest method without a need for two instances"
 }
 	
 * Can't use unique() legacy option
 if "`unique'"!="" {
-	di as text "NOTE: unique() is no longer a recognized option in binscatter2 and will be ignored. binscatter2 now considers the x-variable discrete if it has fewer unique values than nquantiles()"
+	di as text "NOTE: unique() is no longer a recognized option in binscatter3 and will be ignored. binscatter3 now considers the x-variable discrete if it has fewer unique values than nquantiles()"
 }
 
 * Can't use nofastxtile() legacy option
 if "`nofastxtile'"!="" {
-	di as text "NOTE: nofastxtile is no longer a recognized option in binscatter2 and will be ignored. binscatter2 uses gtools to compute quantiles, not fastxtile."
+	di as text "NOTE: nofastxtile is no longer a recognized option in binscatter3 and will be ignored. binscatter3 uses gtools to compute quantiles, not fastxtile."
 }
 
 * Can't use randcut, randvar legacy options
 if "`randcut'"!="1" | "`randvar'"!="" | "`randn'"!="-1" {
-	di as text "NOTE: randcut, randvar, and randn are no longer recognized options in binscatter2 and will be ignored."
+	di as text "NOTE: randcut, randvar, and randn are no longer recognized options in binscatter3 and will be ignored."
 }
 
 *-------------------------------------------------------------------------------
@@ -340,7 +341,7 @@ if `"`absorb'"'!="" {
 		cap which reghdfe
 		if _rc>0 {
 			di as error "Error: You specified more than 1 fixed effect in absorb(), but don't have reghdfe installed."
-			di as error "Please install the reghdfe package from SSC or GitHub to absorb multi-way fixed effects with binscatter2."
+			di as error "Please install the reghdfe package from SSC or GitHub to absorb multi-way fixed effects with binscatter3."
 			exit
 		}
 	}
@@ -350,7 +351,7 @@ if `"`absorb'"'!="" {
 			local regtype reghdfe
 		}
 		else {
-			di "Warning: reghdfe not installed. binscatter2 may be faster when you use absorb() with reghdfe installed."
+			di "Warning: reghdfe not installed. binscatter3 may be faster when you use absorb() with reghdfe installed."
 		}
 	}
 }
@@ -1006,9 +1007,25 @@ if "`noplot'"=="" {
 		list `y_vars_r' `x_r'
 	}
 
+	* If line45 option used: add a dashed gray 45-degree line spanning the binned points
+	* (added after scatters/fits so legend numbering is unaffected)
+	if "`line45'"!="" {
+		local lo45 = .
+		local hi45 = .
+		forvalues i=1/`ynum' {
+			mata: st_local("m_lo", strofreal(min(st_matrix("`y`i'_scatterpts'")), "%21.0g"))
+			mata: st_local("m_hi", strofreal(max(st_matrix("`y`i'_scatterpts'")), "%21.0g"))
+			local lo45 = min(`lo45', `m_lo')
+			local hi45 = max(`hi45', `m_hi')
+		}
+		if !missing(`lo45', `hi45') {
+			local line45_plot (function y=x, range(`lo45' `hi45') lpattern(dash) lcolor(gs10))
+		}
+	}
+
 	* Display graph
-	local graphcmd twoway `quantile_macro' `scatters' `fits' `underlying_data_scatter' , graphregion(fcolor(white)) `xlines' xtitle(`x_var') ytitle(`ytitle') legend(`legend_labels' order(`order')) `options'
-	if "`savedata'"!="" local savedata_graphcmd twoway `quantile_macro' `savedata_scatters' `fits' `underlying_data_scatter', graphregion(fcolor(white)) `xlines' xtitle(`x_var') ytitle(`ytitle') legend(`legend_labels' order(`order')) `options'
+	local graphcmd twoway `quantile_macro' `scatters' `fits' `line45_plot' `underlying_data_scatter' , graphregion(fcolor(white)) `xlines' xtitle(`x_var') ytitle(`ytitle') legend(`legend_labels' order(`order')) `options'
+	if "`savedata'"!="" local savedata_graphcmd twoway `quantile_macro' `savedata_scatters' `fits' `line45_plot' `underlying_data_scatter', graphregion(fcolor(white)) `xlines' xtitle(`x_var') ytitle(`ytitle') legend(`legend_labels' order(`order')) `options'
 	
 	`graphcmd'
 

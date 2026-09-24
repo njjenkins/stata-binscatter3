@@ -1,20 +1,27 @@
 
-binscatter2
+binscatter3
 =================================
 
-[Overview](#overview)
-| [Motivation](#motivation)
-| [Installation](#installation)
-| [Usage](#usage)
-| [Benchmarks](#benchmarks)
-| [To-Do](#todo)
-| [Acknowledgements](#acknowledgements)
-| [License](#license)
+A personal fork of [binscatter2](https://github.com/mdroste/stata-binscatter2) (v0.91, Michael Droste) that adds a `line45` option.
 
-Faster binned scatterplots in Stata with a few new bells and whistles
+`binscatter3` is identical to `binscatter2` except for:
 
-`version 0.91 19jan2023`
+- **`line45`**: overlays a dashed gray 45-degree (y = x) reference line spanning the smallest to largest binned point (across both axes, all y-variables, and all `by()` groups). It's drawn after the scatters and fit lines, so legend numbering is unchanged, and it's included in the do-file written by `savedata()`.
+- The command, help file, and package are renamed `binscatter3` so it can be installed alongside `binscatter2`.
 
+```stata
+ssc install gtools
+net install binscatter3, from("https://raw.githubusercontent.com/njjenkins/stata-binscatter3/master/") replace
+
+sysuse nlsw88, clear
+regress wage tenure age grade
+predict wage_hat
+binscatter3 wage wage_hat, line45 line(none)
+```
+
+Everything below is the original binscatter2 README; references to `binscatter2` apply equally to `binscatter3`. The benchmark do-files in `benchmarks/` are from upstream and still call `binscatter2`.
+
+---
 
 Overview
 ---------------------------------
@@ -49,7 +56,7 @@ There are two options for installing binscatter2. The only prerequisite is the g
 
 ```stata
 ssc install gtools
-net install binscatter2, from("https://raw.githubusercontent.com/mdroste/stata-binscatter2/master/")
+net install binscatter3, from("https://raw.githubusercontent.com/njjenkins/stata-binscatter3/master/")
 ```
 
 2. A ZIP containing the program can be downloaded and manually placed on the user's adopath from Github.
@@ -62,7 +69,7 @@ Usage
 
 Complete internal documentation is provided with the installation and can be accessed by typing:
 ```stata
-help binscatter2
+help binscatter3
 ````
 
 The basic syntax and usage of binscatter2 is inherited from binscatter and should be familiar to existing users of that program.

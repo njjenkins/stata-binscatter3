@@ -1,4 +1,3 @@
-
-v 0.90
-d Michael Droste, mdroste@fas.harvard.edu
-p 'binscatter2': faster, expanded binned scatterplots in Stata
+v 0.91
+d Noah Jenkins (fork of binscatter2 by Michael Droste)
+p binscatter3 'binscatter3': binscatter2 fork adding a line45 option

@@ -1,23 +1,23 @@
 {smcl}
-{* *! version 0.91 19jan2023}{...}
-{viewerjumpto "Syntax" "binscatter2##syntax"}{...}
-{viewerjumpto "Description" "binscatter2##description"}{...}
-{viewerjumpto "Options" "binscatter2##options"}{...}
-{viewerjumpto "Examples" "binscatter2##examples"}{...}
-{viewerjumpto "Saved results" "binscatter2##saved_results"}{...}
-{viewerjumpto "Author" "binscatter2##author"}{...}
-{viewerjumpto "Acknowledgements" "binscatter2##acknowledgements"}{...}
+{* *! binscatter3: fork of binscatter2 v0.91 19jan2023 adding line45}{...}
+{viewerjumpto "Syntax" "binscatter3##syntax"}{...}
+{viewerjumpto "Description" "binscatter3##description"}{...}
+{viewerjumpto "Options" "binscatter3##options"}{...}
+{viewerjumpto "Examples" "binscatter3##examples"}{...}
+{viewerjumpto "Saved results" "binscatter3##saved_results"}{...}
+{viewerjumpto "Author" "binscatter3##author"}{...}
+{viewerjumpto "Acknowledgements" "binscatter3##acknowledgements"}{...}
 {title:Title}
 
 {p2colset 4 19 21 2}{...}
-{p2col :{hi:binscatter2} {hline 2}}Super fast binned scatterplots{p_end}
+{p2col :{hi:binscatter3} {hline 2}}Super fast binned scatterplots{p_end}
 {p2colreset}{...}
 
 
 {marker syntax}{title:Syntax}
 
 {p 3 15 2}
-{cmd:binscatter2}
+{cmd:binscatter3}
 {varlist} {ifin}
 {weight}
 [{cmd:,} {it:options}]
@@ -59,6 +59,7 @@ where {varlist} is {it:y_1} [{it:y_2} [...]] {it:x}
 {synopt :{cmdab:mc:olors(}{it:{help colorstyle}list}{cmd:)}}overriding ordered list of colors for the markers{p_end}
 {synopt :{cmdab:lc:olors(}{it:{help colorstyle}list}{cmd:)}}overriding ordered list of colors for the lines{p_end}
 {synopt :{cmdab:m:symbols(}{it:{help symbolstyle}list}{cmd:)}}ordered list of symbols{p_end}
+{synopt :{opt line45}}add a dashed gray 45-degree line spanning the range of the binned points{p_end}
 {synopt :{opt nograph}}do not display the graph{p_end}
 {synopt :{it:{help twoway_options}}}{help title options:titles}, {help legend option:legends}, {help axis options:axes}, added {help added line options:lines} and {help added text options:text},
 	{help region options:regions}, {help name option:name}, {help aspect option:aspect ratio}, etc.{p_end}
@@ -80,25 +81,25 @@ see {help weight}.
 {title:Description}
 
 {pstd}
-{opt binscatter2} is an enhanced version of Michael Stepner's fantastic -binscatter- program, optimized
+{opt binscatter3} is an enhanced version of Michael Stepner's fantastic -binscatter- program, optimized
 especially for large datasets, with a few new bells and whistles. For large datasets (those with more
-than one million observations), binscatter2 typically runs several times faster than binscatter, with 
+than one million observations), binscatter3 typically runs several times faster than binscatter, with 
 relative performance improvements increasing unboundedly for even larger datasets.
 
 {pstd}
 Binned scatterplots provide a non-parametric way of visualizing the relationship between two variables.
 With a large number of observations, a scatterplot that plots every data point would become too crowded
-to interpret visually.  {cmd:binscatter2} groups the x-axis variable into equal-sized bins, computes the
+to interpret visually.  {cmd:binscatter3} groups the x-axis variable into equal-sized bins, computes the
 mean of the x-axis and y-axis variables within each bin, then creates a scatterplot of these data points.
 The result is a non-parametric visualization of the conditional expectation function.
 
 {pstd}
-{opt binscatter2} provides built-in options to control for covariates before plotting the relationship
-(see {help binscatter2##controls:Controls}).  Additionally, {cmd:binscatter} will plot fit lines based
+{opt binscatter3} provides built-in options to control for covariates before plotting the relationship
+(see {help binscatter3##controls:Controls}).  Additionally, {cmd:binscatter} will plot fit lines based
 on the underlying data, and can automatically handle regression discontinuities (see {help binscatter##fit_line:Fit Line}).
 
 {pstd}
-{opt binscatter2} also provides a few tools to visualize more aspects of a conditional distribution function.
+{opt binscatter3} also provides a few tools to visualize more aspects of a conditional distribution function.
 Suppose you are interested in visualizing what the distribution of y looks like at several values of a variable x.
 Binned scatterplots traditionally let you look at the mean or median value of y within each 'bin'. Binscatter2 also allows
 you to overlay various quantiles of the conditional distribution of x, or show how the variance of y changes conditional on x. 
@@ -114,7 +115,7 @@ you to overlay various quantiles of the conditional distribution of x, or show h
 {phang}{opth by(varname)} plots a separate series for each by-value.  Both numeric and string by-variables
 are supported, but numeric by-variables will have faster run times.
 
-{pmore}Users should be aware of the two ways in which {cmd:binscatter2} does not condition on by-values:
+{pmore}Users should be aware of the two ways in which {cmd:binscatter3} does not condition on by-values:
 
 {phang3}1) When combined with {opt controls()} or {opt absorb()}, the program residualizes using the restricted model in which each covariate
 has the same coefficient in each by-value sample.  It does not run separate regressions for each by-value.  If you wish to control for 
@@ -207,6 +208,11 @@ Specifically, a bin may contain a discontinuity within its range, and therefore 
 
 {phang}{cmdab:lc:olors(}{it:{help colorstyle}list}{cmd:)} specifies an ordered list of colors for the line of each series, which overrides any list provided in {opt colors()}
 
+{phang}{opt line45} adds a dashed gray 45-degree (y = x) reference line. The line spans from the smallest to the largest
+value among all binned scatter points (x and y coordinates, across all y-variables and by-groups). It is drawn after the
+scatters and fit lines, so it does not change the numbering of legend entries, and it is also included in the graph
+saved by {opt savedata()}.
+
 {phang}{cmdab:nograph} specifies that the graph is not drawn if the savedata() option is used.
 
 {phang}{cmdab:m:symbols(}{it:{help symbolstyle}list}{cmd:)} specifies an ordered list of symbols for each series
@@ -244,31 +250,36 @@ loads the scatterpoint data, labels the variables, and plots the binscatter grap
 
 {pstd}What is the relationship between job tenure and wages?{p_end}
 {phang2}. {stata scatter wage tenure}{p_end}
-{phang2}. {stata binscatter wage tenure}{p_end}
+{phang2}. {stata binscatter3 wage tenure}{p_end}
 
 {pstd}The scatter was too crowded to be easily interpetable. The binscatter is cleaner, but a linear fit looks unreasonable.{p_end}
 
 {pstd}Try a quadratic fit.{p_end}
-{phang2}. {stata binscatter wage tenure, line(qfit)}{p_end}
+{phang2}. {stata binscatter3 wage tenure, line(qfit)}{p_end}
 
 {pstd}We can also plot a linear regression discontinuity.{p_end}
-{phang2}. {stata binscatter wage tenure, rd(2.5)}{p_end}
+{phang2}. {stata binscatter3 wage tenure, rd(2.5)}{p_end}
 
 {pstd} What is the relationship between age and wages?{p_end}
 {phang2}. {stata scatter wage age}{p_end}
-{phang2}. {stata binscatter wage age}{p_end}
+{phang2}. {stata binscatter3 wage age}{p_end}
 
-{pstd} The binscatter is again much easier to interpret. (Note that {cmd:binscatter} automatically
+{pstd} The binscatter is again much easier to interpret. (Note that {cmd:binscatter3} automatically
 used each age as a discrete bin, since there are fewer than 20 unique values.){p_end}
 
 {pstd}How does the relationship vary by race?{p_end}
-{phang2}. {stata binscatter wage age, by(race)}{p_end}
+{phang2}. {stata binscatter3 wage age, by(race)}{p_end}
 
 {pstd} The relationship between age and wages is very different for whites and blacks. But what if we control for occupation?{p_end}
-{phang2}. {stata binscatter wage age, by(race) absorb(occupation)}{p_end}
+{phang2}. {stata binscatter3 wage age, by(race) absorb(occupation)}{p_end}
 
 {pstd} A very different picture emerges.  Let's label this graph nicely.{p_end}
-{phang2}. {stata binscatter wage age, by(race) absorb(occupation) msymbols(O T) xtitle(Age) ytitle(Hourly Wage) legend(lab(1 White) lab(2 Black))}{p_end}
+{phang2}. {stata binscatter3 wage age, by(race) absorb(occupation) msymbols(O T) xtitle(Age) ytitle(Hourly Wage) legend(lab(1 White) lab(2 Black))}{p_end}
+
+{pstd}A 45-degree line is useful for calibration plots, e.g. comparing actual to predicted wages.{p_end}
+{phang2}. {stata regress wage tenure age grade}{p_end}
+{phang2}. {stata predict wage_hat}{p_end}
+{phang2}. {stata binscatter3 wage wage_hat, line45 line(none) xtitle(Predicted wage) ytitle(Actual wage)}{p_end}
 
 
 {marker saved_results}{...}
@@ -302,8 +313,10 @@ rather than {bf:e(graphcmd)} in order to avoid truncation due to Stata's charact
 {marker author}{...}
 {title:Author}
 
-{pstd}Michael Droste{p_end}
+{pstd}Michael Droste (binscatter2){p_end}
 {pstd}mdroste@fas.harvard.edu{p_end}
+
+{pstd}{cmd:binscatter3} is a personal fork of binscatter2 v0.91 by Noah Jenkins, adding the {opt line45} option.{p_end}
 
 
 {marker acknowledgements}{...}

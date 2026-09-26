@@ -49,6 +49,7 @@ where {varlist} is {it:y_1} [{it:y_2} [...]] {it:x}
 {synopt :{opth line:type(binscatter##linetype:linetype)}}type of fit line; default is {bf:lfit}, may also be {bf:qfit}, {bf:connect}, or {bf:none}{p_end}
 {synopt :{opth rd(numlist)}}create regression discontinuity at x-values{p_end}
 {synopt :{opt reportreg}}display the regressions used to estimate the fit lines{p_end}
+{synopt :{opth vce(vcetype)}}variance estimator for the fit-line regressions shown by {opt reportreg}{p_end}
 
 {syntab :Distributional Statistics}
 {synopt :{opt quantiles(numlist)}}Display up to two quantiles of the distribution of y in each bin{p_end}
@@ -66,7 +67,7 @@ where {varlist} is {it:y_1} [{it:y_2} [...]] {it:x}
 
 {syntab :Save Output}
 {synopt :{opt savegraph(filename)}}save graph to file; format automatically detected from extension [ex: .gph .jpg .png]{p_end}
-{synopt :{opt savedata(filename)}}save {it:filename}.csv containg scatterpoint data, and {it:filename}.do to process data into graph{p_end}
+{synopt :{opt savedata(filename)}}save {it:filename}.csv (or .dta) containing scatterpoint data, and {it:filename}.do to process data into graph{p_end}
 {synopt :{opt nodofile}}does not save do-file, if savedata(filename) specified{p_end}
 {synopt :{opt replace}}overwrite existing files{p_end}
 
@@ -200,6 +201,9 @@ Specifically, a bin may contain a discontinuity within its range, and therefore 
 
 {phang}{opt reportreg} displays the regressions used to estimate the fit lines in the results window.
 
+{phang}{opth vce(vcetype)} specifies the variance estimator (e.g. {cmd:robust} or {cmd:cluster} {it:clustvar}) used in the fit-line regressions.
+It affects only the standard errors displayed by {opt reportreg}, not the fit lines. Observations with a missing {it:clustvar} are excluded from the sample.
+
 {dlgtab:Graph Style}
 
 {phang}{cmdab:col:ors(}{it:{help colorstyle}list}{cmd:)} specifies an ordered list of colors for each series
@@ -231,7 +235,7 @@ binned scatter plot.
 {phang}{opt savegraph(filename)} saves the graph to a file.  The format is automatically detected from the extension specified [ex: {bf:.gph .jpg .png}],
 and either {cmd:graph save} or {cmd:graph export} is run.  If no file extension is specified {bf:.gph} is assumed.
 
-{phang}{opt savedata(filename)} saves {it:filename}{bf:.csv} containing the binned scatterpoint data, and {it:filename}{bf:.do} which
+{phang}{opt savedata(filename)} saves {it:filename}{bf:.csv} containing the binned scatterpoint data (or {it:filename}{bf:.dta} if {it:filename} ends in {bf:.dta}), and {it:filename}{bf:.do} which
 loads the scatterpoint data, labels the variables, and plots the binscatter graph.
 
 {phang}{opt nodofile} specifies that the do-file {it:filename}{bf:.do} created by the savedata(filename) option is not created.
